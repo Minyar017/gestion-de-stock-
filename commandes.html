@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Produits et Historique des Commandes</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB3CxL18HZLxTedc_5v0eKLIqoBVWraLdQ",
+      authDomain: "test-c9b0e.firebaseapp.com",
+      databaseURL: "https://test-c9b0e-default-rtdb.firebaseio.com",
+      projectId: "test-c9b0e",
+      storageBucket: "test-c9b0e.firebasestorage.app",
+      messagingSenderId: "700016761958",
+      appId: "1:700016761958:web:7f673c8f4cd429ca94e1a7",
+      measurementId: "G-VG85JV0BRM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const productList = document.getElementById("productList");
+      const orderHistory = document.getElementById("orderHistory");
+
+      const productsRef = ref(db, "products");
+      const ordersRef = ref(db, "orders");
+
+      // Récupérer les produits
+      onValue(productsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          console.log("Produits récupérés :", snapshot.val());
+          productList.innerHTML = ""; // Réinitialiser la liste
+          snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            productList.innerHTML += `<li>${data.productName}: ${data.productTemp}°C, ${data.productHumidity}%</li>`;
+          });
+        } else {
+          console.warn("Aucun produit trouvé.");
+          productList.innerHTML = "<li>Aucun produit à afficher.</li>";
+        }
+      }, (error) => {
+        console.error("Erreur de récupération des produits :", error);
+      });
+
+      // Récupérer l'historique des commandes
+      onValue(ordersRef, (snapshot) => {
+        if (snapshot.exists()) {
+          console.log("Commandes récupérées :", snapshot.val());
+          orderHistory.innerHTML = ""; // Réinitialiser la liste
+          snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            orderHistory.innerHTML += `
+              <div class="order-item">
+                <strong>Client:</strong> ${data.clientName}<br>
+                <strong>Produits:</strong> ${data.orderItems}<br>
+                <strong>Température:</strong> ${data.orderTemp}°C <br>
+                <strong>Humidité:</strong> ${data.orderHumidity}%<br><br>
+              </div>`;
+          });
+        } else {
+          console.warn("Aucune commande trouvée.");
+          orderHistory.innerHTML = "<div>Aucune commande à afficher.</div>";
+        }
+      }, (error) => {
+        console.error("Erreur de récupération des commandes :", error);
+      });
+    });
+  </script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f3df;
+      color: #4a4e69;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    .content {
+      width: 70%;
+    }
+
+    .sidebar {
+      width: 28%;
+      background-color: #fff;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul li {
+      background-color: #fff;
+      margin-bottom: 5px;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-item {
+      background-color: #fff;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .link a {
+      color: #6c567b;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Produits</h1>
+    <ul id="productList"></ul>
+    <div class="link">
+      <a href="app.html">Retour au formulaire</a>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Historique des Commandes</h2>
+    <div id="orderHistory"></div>
+  </div>
+</body>
+</html>

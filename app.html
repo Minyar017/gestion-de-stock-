@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajout de Produits</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB3CxL18HZLxTedc_5v0eKLIqoBVWraLdQ",
+      authDomain: "test-c9b0e.firebaseapp.com",
+      databaseURL: "https://test-c9b0e-default-rtdb.firebaseio.com",
+      projectId: "test-c9b0e",
+      storageBucket: "test-c9b0e.firebasestorage.app",
+      messagingSenderId: "700016761958",
+      appId: "1:700016761958:web:7f673c8f4cd429ca94e1a7",
+      measurementId: "G-VG85JV0BRM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("productForm");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const productName = document.getElementById("productName").value;
+        const productTemp = parseFloat(document.getElementById("productTemp").value);
+        const productHumidity = parseFloat(document.getElementById("productHumidity").value);
+
+        if (productName && productTemp && productHumidity) {
+          const productsRef = ref(db, "products");
+          push(productsRef, { productName, productTemp, productHumidity })
+            .then(() => {
+              alert("Produit ajouté avec succès !");
+              form.reset();
+            })
+            .catch((error) => {
+              console.error("Erreur :", error);
+            });
+        } else {
+          alert("Veuillez remplir tous les champs !");
+        }
+      });
+    });
+  </script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f3df;
+      color: #4a4e69;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    form input, form button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    form button {
+      background-color: #6c567b;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    form button:hover {
+      background-color: #355070;
+    }
+    .link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .link a {
+      color: #6c567b;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <form id="productForm">
+    <h2>Ajouter un Produit</h2>
+    <input type="text" id="productName" placeholder="Nom du produit" required>
+    <input type="number" id="productTemp" placeholder="Température (°C)" required>
+    <input type="number" id="productHumidity" placeholder="Humidité (%)" required>
+    <button type="submit">Ajouter</button>
+    <div class="link">
+      <a href="commandes.html">Voir les commandes</a>
+    </div>
+  </form>
+</body>
+</html>
